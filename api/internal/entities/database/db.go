@@ -18,7 +18,6 @@ var (
 func ConnectDatabase() error {
 	DB, err = openDatabase()
 
-	fmt.Println(err)
 	if err != nil {
 		log.Fatal("Erro ao se conectar com o banco de dados")
 		return err

@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 
+	"github.com/crm/api/internal/entities/database"
 	"github.com/crm/api/internal/entities/user"
 	"github.com/gin-gonic/gin"
 )
@@ -10,11 +11,16 @@ import (
 func HandleRequests() {
 	r := gin.Default()
 
+	// Injecao das dependencias do repositorio
+	userRepo := user.NewUserRepository(database.DB)
+	userController := &user.UserController{Repo: userRepo}
+
 	api := r.Group("api/")
 	{
 		users := api.Group("/user")
 		{
-			users.GET("/", user.CreateUser)
+			users.POST("/", userController.CreateUser)
+			users.GET("/", userController.FindAllUser)
 
 		}
 	}
