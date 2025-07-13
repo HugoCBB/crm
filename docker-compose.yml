@@ -1,12 +1,26 @@
+version: '3.8'
+
 services:
   db:
-    image: "postgres"
+    image: postgres
     container_name: crm-database
     environment:
       - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=&{DATABASE_PASS}
+      - POSTGRES_PASSWORD=${DATABASE_PASS}
       - POSTGRES_DB=${DATABASE_NAME}
     ports:
       - "5432:5432"
     volumes:
-      - ./migration/docker-database-initial.sql:/docker-entrypoint-initdb.d/docker-database-initial.sql   
+      - ./migration/docker-database-initial.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: crm-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "54321:80"
+    depends_on:
+      - db
