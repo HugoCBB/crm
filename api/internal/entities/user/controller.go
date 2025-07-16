@@ -3,6 +3,7 @@ package user
 import (
 	"net/http"
 
+	"github.com/crm/api/internal/database/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,14 +12,13 @@ type UserController struct {
 }
 
 func (ur *UserController) CreateUser(c *gin.Context) {
-	var u User
+	var u models.User
 
 	if err := c.ShouldBindBodyWithJSON(&u); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Erro ao cadastrar usuario",
 			"error":   err})
 		return
-
 	}
 	user, err := ur.Repo.Save(&u)
 
@@ -36,7 +36,7 @@ func (ur *UserController) CreateUser(c *gin.Context) {
 }
 
 func (ur *UserController) FindAllUser(c *gin.Context) {
-	var u []User
+	var u []models.User
 	user, err := ur.Repo.FindAllUser(&u)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
