@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/crm/api/config"
-	"github.com/crm/api/internal/database/models"
+	"github.com/crm/api/internal/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -42,6 +42,6 @@ func openDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	DB.AutoMigrate(&models.User{}, &models.Client{}, &models.Payment{})
+	DB.AutoMigrate(&domain.User{}, &domain.Client{}, &domain.Payment{})
 	return DB, nil
 }
