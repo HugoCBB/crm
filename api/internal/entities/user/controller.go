@@ -3,7 +3,7 @@ package user
 import (
 	"net/http"
 
-	"github.com/crm/api/internal/database/models"
+	"github.com/crm/api/internal/domain"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,7 +12,7 @@ type UserController struct {
 }
 
 func (ur *UserController) CreateUser(c *gin.Context) {
-	var u models.User
+	var u domain.User
 
 	if err := c.ShouldBindBodyWithJSON(&u); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -36,7 +36,7 @@ func (ur *UserController) CreateUser(c *gin.Context) {
 }
 
 func (ur *UserController) FindAllUser(c *gin.Context) {
-	var u []models.User
+	var u []domain.User
 	user, err := ur.Repo.FindAllUser(&u)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})

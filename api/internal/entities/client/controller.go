@@ -3,7 +3,7 @@ package client
 import (
 	"net/http"
 
-	"github.com/crm/api/internal/database/models"
+	"github.com/crm/api/internal/domain"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,7 +12,7 @@ type ClientController struct {
 }
 
 func (u *ClientController) CreateClient(c *gin.Context) {
-	var cli models.Client
+	var cli domain.Client
 
 	if err := c.ShouldBindBodyWithJSON(&cli); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
