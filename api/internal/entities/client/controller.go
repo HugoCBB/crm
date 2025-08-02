@@ -12,15 +12,15 @@ type ClientController struct {
 }
 
 func (u *ClientController) CreateClient(c *gin.Context) {
-	var cli domain.Client
+	var client domain.Client
 
-	if err := c.ShouldBindBodyWithJSON(&cli); err != nil {
+	if err := c.ShouldBindBodyWithJSON(&client); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Erro ao cadastrar um novo client",
 			"error":   err})
 		return
 	}
-	client, err := u.Repo.Save(&cli)
+	newClient, err := u.Repo.Save(&client)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -30,7 +30,7 @@ func (u *ClientController) CreateClient(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": client,
+		"data": newClient,
 	})
 
 }

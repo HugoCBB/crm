@@ -12,15 +12,15 @@ type UserController struct {
 }
 
 func (ur *UserController) CreateUser(c *gin.Context) {
-	var u domain.User
+	var user domain.User
 
-	if err := c.ShouldBindBodyWithJSON(&u); err != nil {
+	if err := c.ShouldBindBodyWithJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Erro ao cadastrar usuario",
 			"error":   err})
 		return
 	}
-	user, err := ur.Repo.Save(&u)
+	newUser, err := ur.Repo.Save(&user)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -31,19 +31,19 @@ func (ur *UserController) CreateUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Usuario cadastrado com sucesso",
-		"data":    user,
+		"data":    newUser,
 	})
 }
 
 func (ur *UserController) FindAllUser(c *gin.Context) {
-	var u []domain.User
-	user, err := ur.Repo.FindAllUser(&u)
+	var user []domain.User
+	newUser, err := ur.Repo.FindAllUser(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": user,
+		"data": newUser,
 	})
 }

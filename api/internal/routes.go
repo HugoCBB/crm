@@ -3,43 +3,34 @@ package internal
 import (
 	"fmt"
 
+	"github.com/crm/api/config"
 	"github.com/crm/api/internal/database"
-	"github.com/crm/api/internal/entities/client"
-	"github.com/crm/api/internal/entities/payament"
-	"github.com/crm/api/internal/entities/user"
 	"github.com/gin-gonic/gin"
 )
 
 func HandleRequests() {
 	r := gin.Default()
 
-	// Injecao das dependencias do repositorio
-	userRepo := user.NewUserRepository(database.DB)
-	userController := &user.UserController{Repo: userRepo}
-
-	clientRepo := client.NewClientRepository(database.DB)
-	clientController := &client.ClientController{Repo: clientRepo}
-
-	payamentRepo := payament.NewClientRepository(database.DB)
-	payamentController := &payament.PayamentController{Repo: payamentRepo}
+	deps := config.SetupDependency(database.DB)
 
 	api := r.Group("api/")
 	{
 		users := api.Group("/user")
 		{
-			users.POST("/", userController.CreateUser)
-			users.GET("/", userController.FindAllUser)
+			users.POST("/", deps.UserController.CreateUser)
+			users.GET("/", deps.UserController.FindAllUser)
 
 		}
 
 		client := api.Group("/clients")
 		{
-			client.POST("/", clientController.CreateClient)
+			client.POST("/", deps.ClientController.CreateClient)
 		}
 
-		payament := api.Group("/payament")
+		payment := api.Group("/payment")
 		{
-			payament.POST("/", payamentController.CreatePayament)
+			payment.POST("/", deps.PaymentController.Createpayment)
+			payment.PUT("/:id", deps.PaymentController.ModifyUser)
 		}
 	}
 	fmt.Println("Servidor rodando na porta 8080")
