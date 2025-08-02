@@ -22,7 +22,7 @@ func ConnectDatabase() error {
 		log.Fatal("Erro ao se conectar com o banco de dados")
 		return err
 	}
-
+	fmt.Println("Conexao estabelecida com o banco de dados")
 	return nil
 }
 

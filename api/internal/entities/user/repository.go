@@ -30,7 +30,7 @@ func (u *UserRepository) Save(user *domain.User) (*domain.User, error) {
 }
 
 func (u *UserRepository) FindAllUser(user *[]domain.User) (*[]domain.User, error) {
-	if err := u.DB.Preload("Clients").Find(&user).Error; err != nil {
+	if err := u.DB.Preload("Clients.Payments").Find(&user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
