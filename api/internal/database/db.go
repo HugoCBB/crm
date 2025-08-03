@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/crm/api/config"
 	"github.com/crm/api/internal/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -26,18 +27,13 @@ func ConnectDatabase() error {
 }
 
 func openDatabase() (*gorm.DB, error) {
-	// cfg := config.NewDatabaseCosnfig()
+	cfg := config.NewDatabaseConfig()
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		// cfg.Host,
-		// cfg.User,
-		// cfg.Password,
-		// cfg.Name,
-		// cfg.Port,
-		"dpg-d27bks6uk2gs73e018rg-a",
-		"hugocbb",
-		"TJGApW2qflOtdvXtOAIh3sdtrdA1JKuD",
-		"crm_j2q0",
-		"5432",
+		cfg.Host,
+		cfg.User,
+		cfg.Password,
+		cfg.Name,
+		cfg.Port,
 	)
 
 	DB, err = gorm.Open(postgres.Open(dsn))
