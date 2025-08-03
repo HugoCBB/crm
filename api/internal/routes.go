@@ -3,15 +3,15 @@ package internal
 import (
 	"fmt"
 
-	"github.com/crm/api/config"
-	"github.com/crm/api/internal/database"
+	"github.com/crm/api/config/database"
+	"github.com/crm/api/config/dependencys"
 	"github.com/gin-gonic/gin"
 )
 
 func HandleRequests() {
 	r := gin.Default()
 
-	deps := config.SetupDependency(database.DB)
+	deps := dependencys.SetupDependency(database.DB)
 
 	api := r.Group("api/")
 	{
