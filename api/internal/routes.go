@@ -30,7 +30,7 @@ func HandleRequests() {
 		payment := api.Group("/payment")
 		{
 			payment.POST("/", deps.PaymentController.Createpayment)
-			payment.PUT("/:id", deps.PaymentController.ModifyUser)
+			payment.PUT("/:id", deps.PaymentController.ModifyPayment)
 		}
 	}
 	fmt.Println("Servidor rodando na porta 8080")

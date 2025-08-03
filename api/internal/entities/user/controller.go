@@ -2,6 +2,7 @@ package user
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/crm/api/internal/domain"
 	"github.com/gin-gonic/gin"
@@ -12,15 +13,17 @@ type UserController struct {
 }
 
 func (ur *UserController) CreateUser(c *gin.Context) {
-	var user domain.User
+	var payload domain.User
 
-	if err := c.ShouldBindBodyWithJSON(&user); err != nil {
+	if err := c.ShouldBindBodyWithJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Erro ao cadastrar usuario",
 			"error":   err})
 		return
 	}
-	newUser, err := ur.Repo.Save(&user)
+
+	payload.CreateDate = time.Now().Format("02/01/2006")
+	newUser, err := ur.Repo.Save(&payload)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -36,8 +39,8 @@ func (ur *UserController) CreateUser(c *gin.Context) {
 }
 
 func (ur *UserController) FindAllUser(c *gin.Context) {
-	var user []domain.User
-	newUser, err := ur.Repo.FindAllUser(&user)
+	var payload []domain.User
+	newUser, err := ur.Repo.FindAllUser(&payload)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return

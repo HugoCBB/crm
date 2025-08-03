@@ -21,6 +21,7 @@ func NewPaymentRepository(db *gorm.DB) *paymentRepository {
 }
 
 func (p *paymentRepository) Save(payment *domain.Payment) (*domain.Payment, error) {
+	payment.Type = "PENDENTE"
 	if err := p.DB.Create(&payment).Error; err != nil {
 		return nil, err
 	}
