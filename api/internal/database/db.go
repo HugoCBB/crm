@@ -33,10 +33,10 @@ func openDatabase() (*gorm.DB, error) {
 		// cfg.Password,
 		// cfg.Name,
 		// cfg.Port,
-		"db",
-		"postgres",
-		"root",
-		"crm",
+		"dpg-d27bks6uk2gs73e018rg-a",
+		"hugocbb",
+		"TJGApW2qflOtdvXtOAIh3sdtrdA1JKuD",
+		"crm_j2q0",
 		"5432",
 	)
 
