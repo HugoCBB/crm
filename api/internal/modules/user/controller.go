@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/crm/api/domain"
+	"github.com/crm/api/pkg/hash"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,28 +13,45 @@ type UserController struct {
 	Repo IUserRepository
 }
 
-func (ur *UserController) CreateUser(c *gin.Context) {
+func (ur *UserController) Register(c *gin.Context) {
 	var payload domain.User
 
-	if err := c.ShouldBindBodyWithJSON(&payload); err != nil {
+	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Erro ao cadastrar usuario",
-			"error":   err})
+			"message": "Erro ao decodificar dados",
+			"error":   err,
+		})
 		return
 	}
 
-	payload.CreateDate = time.Now().Format("02/01/2006")
-	newUser, err := ur.Repo.Save(&payload)
-
+	hashedPassword, err := hash.HashPassword(payload.Password)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Erro ao cadastrar usuario",
-			"error":   err})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Erro ao gerar hash da senha",
+			"error":   err,
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Usuario cadastrado com sucesso",
+	user := domain.User{
+		Name:       payload.Name,
+		Email:      payload.Email,
+		Password:   hashedPassword,
+		Roles:      domain.USER,
+		CreateDate: time.Now().Format("02/01/2006"),
+	}
+
+	newUser, err := ur.Repo.Save(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Erro ao salvar usuário",
+			"error":   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Usuário cadastrado com sucesso",
 		"data":    newUser,
 	})
 }
