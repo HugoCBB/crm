@@ -20,8 +20,6 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 }
 
 func (u *UserRepository) Save(user *domain.User) (*domain.User, error) {
-	user.Roles = "USER"
-
 	if err := u.DB.Create(&user).Error; err != nil {
 		return nil, err
 	}
