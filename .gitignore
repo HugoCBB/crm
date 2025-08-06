@@ -1,2 +1,4 @@
 .env
-api/tmp/*
+api/tmp
+api/tmp/build-errors.log
+api/tmp/main
