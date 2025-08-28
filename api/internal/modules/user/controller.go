@@ -6,6 +6,7 @@ import (
 
 	"github.com/crm/api/domain"
 	"github.com/crm/api/pkg/hash"
+	"github.com/crm/api/pkg/jwt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -54,6 +55,48 @@ func (ur *UserController) Register(c *gin.Context) {
 		"message": "Usuário cadastrado com sucesso",
 		"data":    newUser,
 	})
+}
+
+func (ur *UserController) Login(c *gin.Context) {
+	var payload domain.User
+
+	if err := c.ShouldBindBodyWithJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Erro ao decodificar dados",
+			"error":   err.Error(),
+		})
+		return
+	}
+	user := ur.Repo.GetUserByEmail(payload.Email)
+	if user == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Credenciais inválidas",
+		})
+		return
+	}
+
+	if err := hash.CompareHash(user.Password, payload.Password); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Senha invalida",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	tokenString, err := jwt.GenerateToken(int(payload.ID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+
+	}
+
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "Login realizado com sucesso",
+		"token":  tokenString,
+	})
+
 }
 
 func (ur *UserController) FindAllUser(c *gin.Context) {
