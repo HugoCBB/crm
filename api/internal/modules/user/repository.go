@@ -9,6 +9,7 @@ type (
 	IUserRepository interface {
 		Save(user *domain.User) (*domain.User, error)
 		FindAllUser(user *[]domain.User) (*[]domain.User, error)
+		GetUserByEmail(user string) *domain.User
 	}
 	UserRepository struct {
 		DB *gorm.DB
@@ -32,4 +33,12 @@ func (u *UserRepository) FindAllUser(user *[]domain.User) (*[]domain.User, error
 		return nil, err
 	}
 	return user, nil
+}
+
+func (u *UserRepository) GetUserByEmail(email string) *domain.User {
+	var user domain.User
+	if err := u.DB.First(&user, "email = ?", email).Error; err != nil {
+		return nil
+	}
+	return &user
 }
