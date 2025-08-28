@@ -24,15 +24,15 @@ services:
     depends_on:
       - db
 
-  api:
-    container_name: crm-api
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    volumes:
-      - ./api:/app
-      - .env:/app/.env
+  # api:
+  #   container_name: crm-api
+  #   build:
+  #     context: ./api
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - ./api:/app
+  #     - .env:/app/.env
