@@ -5,12 +5,13 @@ import (
 
 	"github.com/crm/api/config/database"
 	"github.com/crm/api/config/dependencys"
+	"github.com/crm/api/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func HandleRequests() {
 	r := gin.Default()
-
+	r.Use(middleware.CORSMiddleware())
 	deps := dependencys.SetupDependency(database.DB)
 
 	api := r.Group("api/")
