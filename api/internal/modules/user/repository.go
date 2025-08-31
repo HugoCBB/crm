@@ -10,6 +10,7 @@ type (
 		Save(user *domain.User) (*domain.User, error)
 		FindAllUser(user *[]domain.User) (*[]domain.User, error)
 		GetUserByEmail(user string) *domain.User
+		DeletUserById(user *domain.User, id string) error
 	}
 	UserRepository struct {
 		DB *gorm.DB
@@ -41,4 +42,12 @@ func (u *UserRepository) GetUserByEmail(email string) *domain.User {
 		return nil
 	}
 	return &user
+}
+
+func (u *UserRepository) DeletUserById(user *domain.User, id string) error {
+	if err := u.DB.Delete(&user, id).Error; err != nil {
+		return err
+	}
+	return nil
+
 }

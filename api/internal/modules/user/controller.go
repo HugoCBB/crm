@@ -44,8 +44,8 @@ func (ur *UserController) Register(c *gin.Context) {
 
 	newUser, err := ur.Repo.Save(&user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Erro ao salvar usuário",
+		c.JSON(http.StatusConflict, gin.H{
+			"message": "Email ja em uso",
 			"error":   err,
 		})
 		return
@@ -110,4 +110,16 @@ func (ur *UserController) FindAllUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": newUser,
 	})
+}
+
+func (ur *UserController) DeleteUser(c *gin.Context) {
+	var payload domain.User
+	id := c.Param("id")
+	if err := ur.Repo.DeletUserById(&payload, id); err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Usuario deletado com sucesso",
+	})
+
 }
