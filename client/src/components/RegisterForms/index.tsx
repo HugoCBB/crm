@@ -4,7 +4,9 @@ import { useState } from 'react';
 
 
 export const RegisterForms = () => {
-   
+    
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [registerMessage, setRegisterMessage] = useState<string | null>(null)
     const [form, setForm] = useState({
       name: '',
       email: '',
@@ -15,16 +17,16 @@ export const RegisterForms = () => {
         e.preventDefault();
 
         try {
-          const response = await axios.post("/api/user/",{
-            method: 'POST',
+          const response = await axios.post("/api/user/register",form, {
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(form)
           })
 
-          setForm(response.data)
+          setForm({ name: "", email: "", password: "", phone: "" });
+          setRegisterMessage("Usuario cadastrado com sucesso")
 
         } catch (error) {
           console.error(error)
+          setErrorMessage("Ocorreu um erro inesperado. Por favor, tente novamente.");
           
         }
     };
@@ -70,7 +72,7 @@ export const RegisterForms = () => {
             </label>
             <input
               id="phone"
-              type="tel" // Use type="tel" para telefones
+              type="tel"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 placeholder-gray-400 transition duration-200 ease-in-out"
               placeholder="(XX) XXXXX-XXXX"
               value={form.phone}
@@ -95,11 +97,23 @@ export const RegisterForms = () => {
             />
           </div>
 
+          {registerMessage && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4" role="alert">
+              <span className="block sm:inline">{registerMessage}</span>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" role="alert">
+              <span className="block sm:inline">{errorMessage}</span>
+            </div>
+          )}
+          
+
           {/* Botão de Envio */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105"
-          >
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
             Registrar
           </button>
         </form>
