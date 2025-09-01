@@ -16,9 +16,9 @@ func HandleRequests() {
 
 	api := r.Group("api/")
 	{
-		users := api.Group("/user")
+		users := api.Group("/users")
 		{
-			users.POST("/register", deps.UserController.Register)
+			users.POST("/register", deps.UserController.RegisterUser)
 			users.DELETE("/:id", deps.UserController.DeleteUser)
 			users.GET("/", deps.UserController.FindAllUser)
 
