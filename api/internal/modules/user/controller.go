@@ -2,19 +2,16 @@ package user
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/crm/api/domain"
-	"github.com/crm/api/pkg/hash"
-	"github.com/crm/api/pkg/jwt"
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	Repo IUserRepository
+	Repo IUserUsecase
 }
 
-func (ur *UserController) Register(c *gin.Context) {
+func (ur *UserController) RegisterUser(c *gin.Context) {
 	var payload domain.User
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -25,35 +22,13 @@ func (ur *UserController) Register(c *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := hash.HashPassword(payload.Password)
+	err := ur.Repo.Register(&payload)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Erro ao gerar hash da senha",
-			"error":   err,
-		})
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-
-	user := domain.User{
-		Name:       payload.Name,
-		Email:      payload.Email,
-		Password:   hashedPassword,
-		Roles:      domain.USER,
-		CreateDate: time.Now().Format("02/01/2006"),
-	}
-
-	newUser, err := ur.Repo.Save(&user)
-	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{
-			"message": "Email ja em uso",
-			"error":   err,
-		})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Usuário cadastrado com sucesso",
-		"data":    newUser,
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Usuario cadastrado com sucesso",
 	})
 }
 
@@ -67,27 +42,11 @@ func (ur *UserController) Login(c *gin.Context) {
 		})
 		return
 	}
-	user := ur.Repo.GetUserByEmail(payload.Email)
-	if user == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Credenciais inválidas",
-		})
-		return
-	}
 
-	if err := hash.CompareHash(user.Password, payload.Password); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Senha invalida",
-			"error":   err.Error(),
-		})
-		return
-	}
-
-	tokenString, err := jwt.GenerateToken(int(payload.ID))
+	tokenString, err := ur.Repo.Login(&payload)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusBadRequest, err)
 		return
-
 	}
 
 	c.SetSameSite(http.SameSiteLaxMode)
@@ -101,21 +60,21 @@ func (ur *UserController) Login(c *gin.Context) {
 
 func (ur *UserController) FindAllUser(c *gin.Context) {
 	var payload []domain.User
-	newUser, err := ur.Repo.FindAllUser(&payload)
+	users, err := ur.Repo.FindAllUser(&payload)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"data": newUser,
+		"data": users,
 	})
 }
 
 func (ur *UserController) DeleteUser(c *gin.Context) {
 	var payload domain.User
 	id := c.Param("id")
-	if err := ur.Repo.DeletUserById(&payload, id); err != nil {
+	if err := ur.Repo.DeleteUser(&payload, id); err != nil {
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{

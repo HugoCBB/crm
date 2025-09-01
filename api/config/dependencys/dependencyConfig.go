@@ -18,7 +18,9 @@ func SetupDependency(db *gorm.DB) *dependency {
 	clientRepository := client.NewClientRepository(db)
 	paymentRepository := payment.NewPaymentRepository(db)
 
-	userController := &user.UserController{Repo: userRepository}
+	userUsecase := &user.UserUsecase{Repo: userRepository}
+
+	userController := &user.UserController{Repo: userUsecase}
 	clientController := &client.ClientController{Repo: clientRepository}
 	paymentController := &payment.PaymentController{Repo: paymentRepository}
 

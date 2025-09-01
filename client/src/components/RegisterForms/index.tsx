@@ -17,7 +17,7 @@ export const RegisterForms = () => {
         e.preventDefault();
 
         try {
-          const response = await axios.post("/api/user/register",form, {
+          const response = await axios.post("/api/users/register",form, {
             headers: { 'Content-Type': 'application/json' },
           })
 

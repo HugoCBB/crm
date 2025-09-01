@@ -1,6 +1,8 @@
 package user
 
 import (
+	"errors"
+
 	"github.com/crm/api/domain"
 	"gorm.io/gorm"
 )
@@ -9,7 +11,7 @@ type (
 	IUserRepository interface {
 		Save(user *domain.User) (*domain.User, error)
 		FindAllUser(user *[]domain.User) (*[]domain.User, error)
-		GetUserByEmail(user string) *domain.User
+		GetUserByEmail(user string) (*domain.User, error)
 		DeletUserById(user *domain.User, id string) error
 	}
 	UserRepository struct {
@@ -36,12 +38,15 @@ func (u *UserRepository) FindAllUser(user *[]domain.User) (*[]domain.User, error
 	return user, nil
 }
 
-func (u *UserRepository) GetUserByEmail(email string) *domain.User {
+func (u *UserRepository) GetUserByEmail(email string) (*domain.User, error) {
 	var user domain.User
-	if err := u.DB.First(&user, "email = ?", email).Error; err != nil {
-		return nil
+	if err := u.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
 	}
-	return &user
+	return &user, nil
 }
 
 func (u *UserRepository) DeletUserById(user *domain.User, id string) error {
