@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 export const RegisterForms = () => {
     
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [statusMessage, setStatusMessage] = useState(Boolean)
     const [registerMessage, setRegisterMessage] = useState<string | null>(null)
     const [form, setForm] = useState({
       name: '',
@@ -22,17 +22,33 @@ export const RegisterForms = () => {
           })
 
           setForm({ name: "", email: "", password: "", phone: "" });
+          setStatusMessage(true)
           setRegisterMessage("Usuario cadastrado com sucesso")
 
         } catch (error) {
           console.error(error)
-          setErrorMessage("Ocorreu um erro inesperado. Por favor, tente novamente.");
+          setStatusMessage(false)
+          setRegisterMessage("Ocorreu um erro inesperado. Por favor, tente novamente.");
           
         }
     };
 
     return(
         <form onSubmit={handleSubmit}>
+
+          {registerMessage && (
+            <div 
+              className={`border px-4 py-3 rounded-lg mb-4 ${
+                statusMessage 
+                  ? "bg-green-100 border-green-400 text-green-700" 
+                  : "bg-red-100 border-red-400 text-red-700"
+              }`} 
+              role="alert"
+            >
+              <span className="block sm:inline">{registerMessage}</span>
+            </div>
+          )}
+
           {/* Campo: Nome */}
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-semibold mb-2 text-gray-700">
@@ -97,23 +113,10 @@ export const RegisterForms = () => {
             />
           </div>
 
-          {registerMessage && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4" role="alert">
-              <span className="block sm:inline">{registerMessage}</span>
-            </div>
-          )}
-
-          {errorMessage && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" role="alert">
-              <span className="block sm:inline">{errorMessage}</span>
-            </div>
-          )}
-          
-
           {/* Botão de Envio */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+            className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
             Registrar
           </button>
         </form>
