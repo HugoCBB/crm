@@ -1,18 +1,62 @@
 "use client"
+import axios from 'axios';
+import { useRouter } from 'next/navigation'; 
 import { useState } from 'react';
 
 
 export const LoginForm = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [statusMessage, setStatusMessage] = useState(Boolean)
+    const [loginMessage, setLoginMessage] = useState<string | null>(null)
 
-    const handleSubmit = (e: any) => {
+    const router = useRouter()
+    const [form, setForm] = useState({
+      email: "",
+      password: ""
+    })
+
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
+
+        try {
+          const response = await axios.post("/api/users/login",form, {
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials: true,
+          })
+          setForm({email: "", password: ""})
+          setStatusMessage(true)
+          setLoginMessage("Login realizado com sucesso")
+
+          if (response.status == 200) {
+            router.push('/dashboard')
+            
+          }
+
+        } catch(error: any) {
+          console.error(error)
+          setStatusMessage(false)
+          setLoginMessage("Erro ao realizar login");
+
+
+        }
+
     };
 
 
     return(
         <form onSubmit={handleSubmit}>
+
+          {loginMessage && (
+            <div 
+              className={`border px-4 py-3 rounded-lg mb-4 ${
+                statusMessage 
+                  ? "bg-green-100 border-green-400 text-green-700" 
+                  : "bg-red-100 border-red-400 text-red-700"
+              }`} 
+              role="alert"
+            >
+              <span className="block sm:inline">{loginMessage}</span>
+            </div>
+          )}
 
           {/* Campo: Email */}
           <div className="mb-4">
@@ -24,8 +68,8 @@ export const LoginForm = () => {
               type="email"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 placeholder-gray-400 transition duration-200 ease-in-out"
               placeholder="seuemail@exemplo.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={form.email}
+              onChange={(e) => setForm({...form, email: e.target.value})}
               required
             />
           </div>
@@ -40,8 +84,8 @@ export const LoginForm = () => {
               type="password"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 placeholder-gray-400 transition duration-200 ease-in-out"
               placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.password}
+              onChange={(e) => setForm({...form, password: e.target.value})}
               required
             />
           </div>
