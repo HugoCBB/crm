@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/crm/api/config/database"
 	"github.com/crm/api/config/dependencys"
@@ -21,6 +22,8 @@ func HandleRequests() {
 			users.POST("/register", deps.UserController.RegisterUser)
 			users.DELETE("/:id", deps.UserController.DeleteUser)
 			users.GET("/", deps.UserController.FindAllUser)
+			users.GET("/validate", middleware.RequireAuth, Validate)
+			users.POST("/login", deps.UserController.Login)
 
 		}
 
@@ -37,4 +40,10 @@ func HandleRequests() {
 	}
 	fmt.Println("Servidor rodando na porta 8080")
 	r.Run(":8080")
+}
+
+func Validate(c *gin.Context) {
+	user, _ := c.Get("user")
+	c.JSON(http.StatusOK, gin.H{"message": user})
+
 }

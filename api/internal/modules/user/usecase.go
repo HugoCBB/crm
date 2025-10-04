@@ -59,11 +59,15 @@ func (r *UserUsecase) Login(payload *domain.User) (string, error) {
 		return "", domain.ErrInternalError
 	}
 
+	if user == nil {
+		return "", domain.ErrUserNotFound
+	}
+
 	if err := hash.CompareHash(user.Password, payload.Password); err != nil {
 		return "", domain.ErrInvalidPassword
 	}
 
-	tokenString, err := jwt.GenerateToken(int(payload.ID))
+	tokenString, err := jwt.GenerateToken(int(user.ID))
 	if err != nil {
 		return "", domain.ErrInternalError
 	}
