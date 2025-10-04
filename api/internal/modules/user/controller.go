@@ -45,7 +45,9 @@ func (ur *UserController) Login(c *gin.Context) {
 
 	tokenString, err := ur.Repo.Login(&payload)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
