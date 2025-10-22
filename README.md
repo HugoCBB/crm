@@ -69,6 +69,7 @@ crm/
 * PostgreSQL
 * Yarn (para rodar o frontend)
 * Git
+* Docker
 
 ### 2️⃣ Configuração do banco de dados
 
