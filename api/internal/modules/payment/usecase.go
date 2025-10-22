@@ -3,7 +3,7 @@ package payment
 import (
 	"time"
 
-	"github.com/crm/api/domain"
+	"github.com/crm/api/internal/domain"
 )
 
 type (
@@ -24,7 +24,7 @@ func (p *PaymentUsecase) Createpayment(payload *domain.Payment) (*domain.Payment
 		Type:       payload.Type,
 		FinalDate:  payload.FinalDate,
 		Status:     payload.Status,
-		ClientID:   payload.ClientID,
+		LeadsID:    payload.LeadsID,
 		CreateDate: time.Now().Format("02/01/2006"),
 	}
 

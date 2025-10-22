@@ -3,7 +3,7 @@ package user
 import (
 	"time"
 
-	"github.com/crm/api/domain"
+	"github.com/crm/api/internal/domain"
 	"github.com/crm/api/pkg/hash"
 	"github.com/crm/api/pkg/jwt"
 )

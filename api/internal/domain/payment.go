@@ -20,5 +20,5 @@ type Payment struct {
 	CreateDate string        `json:"create_date"`
 	FinalDate  string        `json:"final_date"`
 	Status     Statuspayment `json:"status"`
-	ClientID   uint          `json:"client_id"`
+	LeadsID    uint          `json:"leads_id"`
 }

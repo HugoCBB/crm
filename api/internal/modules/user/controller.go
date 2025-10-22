@@ -3,7 +3,7 @@ package user
 import (
 	"net/http"
 
-	"github.com/crm/api/domain"
+	"github.com/crm/api/internal/domain"
 	"github.com/gin-gonic/gin"
 )
 

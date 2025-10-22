@@ -1,7 +1,7 @@
 package payment
 
 import (
-	"github.com/crm/api/domain"
+	"github.com/crm/api/internal/domain"
 	"gorm.io/gorm"
 )
 

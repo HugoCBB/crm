@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/crm/api/config/database"
 	"github.com/crm/api/config/dependencys"
@@ -22,17 +21,16 @@ func HandleRequests() {
 			users.POST("/register", deps.UserController.RegisterUser)
 			users.DELETE("/:id", deps.UserController.DeleteUser)
 			users.GET("/", deps.UserController.FindAllUser)
-			users.GET("/validate", middleware.RequireAuth, Validate)
 			users.POST("/login", deps.UserController.Login)
 
 		}
 
-		client := api.Group("/clients")
+		Leads := api.Group("/lead", middleware.RequireAuth)
 		{
-			client.POST("/", deps.ClientController.CreateClient)
+			Leads.POST("/", deps.LeadsController.CreateLead)
 		}
 
-		payment := api.Group("/payment")
+		payment := api.Group("/payment", middleware.RequireAuth)
 		{
 			payment.POST("/", deps.PaymentController.Createpayment)
 			payment.PUT("/:id", deps.PaymentController.ModifyPayment)
@@ -40,10 +38,4 @@ func HandleRequests() {
 	}
 	fmt.Println("Servidor rodando na porta 8080")
 	r.Run(":8080")
-}
-
-func Validate(c *gin.Context) {
-	user, _ := c.Get("user")
-	c.JSON(http.StatusOK, gin.H{"message": user})
-
 }

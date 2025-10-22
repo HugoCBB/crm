@@ -1,7 +1,7 @@
 package dependencys
 
 import (
-	"github.com/crm/api/internal/modules/client"
+	"github.com/crm/api/internal/modules/leads"
 	"github.com/crm/api/internal/modules/payment"
 	"github.com/crm/api/internal/modules/user"
 	"gorm.io/gorm"
@@ -9,25 +9,26 @@ import (
 
 type dependency struct {
 	UserController    *user.UserController
-	ClientController  *client.ClientController
+	LeadsController   *leads.LeadsController
 	PaymentController *payment.PaymentController
 }
 
 func SetupDependency(db *gorm.DB) *dependency {
 	userRepository := user.NewUserRepository(db)
-	clientRepository := client.NewClientRepository(db)
+	leadsRepository := leads.NewLeadsRepository(db)
 	paymentRepository := payment.NewPaymentRepository(db)
 
 	userUsecase := &user.UserUsecase{Repo: userRepository}
 	paymentUsecase := &payment.PaymentUsecase{Repo: paymentRepository}
+	leadsUsecase := &leads.LeadsUsecase{Repo: leadsRepository}
 
 	userController := &user.UserController{Repo: userUsecase}
-	clientController := &client.ClientController{Repo: clientRepository}
+	leadsController := &leads.LeadsController{Repo: leadsUsecase}
 	paymentController := &payment.PaymentController{Repo: paymentUsecase}
 
 	return &dependency{
 		UserController:    userController,
-		ClientController:  clientController,
+		LeadsController:   leadsController,
 		PaymentController: paymentController,
 	}
 }

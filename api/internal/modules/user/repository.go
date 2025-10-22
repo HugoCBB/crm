@@ -3,7 +3,7 @@ package user
 import (
 	"errors"
 
-	"github.com/crm/api/domain"
+	"github.com/crm/api/internal/domain"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +32,7 @@ func (u *UserRepository) Save(user *domain.User) (*domain.User, error) {
 }
 
 func (u *UserRepository) FindAllUser(user *[]domain.User) (*[]domain.User, error) {
-	if err := u.DB.Preload("Clients.Payments").Find(&user).Error; err != nil {
+	if err := u.DB.Preload("Leadss.Payments").Find(&user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
