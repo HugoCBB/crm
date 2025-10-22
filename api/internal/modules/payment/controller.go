@@ -3,14 +3,13 @@ package payment
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/crm/api/domain"
 	"github.com/gin-gonic/gin"
 )
 
 type PaymentController struct {
-	Repo IpaymentRepository
+	Repo IPaymentUsecase
 }
 
 func (p *PaymentController) Createpayment(c *gin.Context) {
@@ -22,8 +21,7 @@ func (p *PaymentController) Createpayment(c *gin.Context) {
 		})
 		return
 	}
-	payload.CreateDate = time.Now().Format("02/01/2006")
-	payment, err := p.Repo.Save(&payload)
+	payment, err := p.Repo.Createpayment(&payload)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -45,8 +43,7 @@ func (p *PaymentController) ModifyPayment(c *gin.Context) {
 	id := c.Param("id")
 	newId, _ := strconv.Atoi(id)
 
-	payment, err := p.Repo.PutPayment(&payload, newId)
-
+	payment, err := p.Repo.ModifyPayment(&payload, newId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Erro ao modificar pagamento",

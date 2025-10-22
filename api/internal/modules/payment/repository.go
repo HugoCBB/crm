@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	IpaymentRepository interface {
+	IPaymentRepository interface {
 		Save(payment *domain.Payment) (*domain.Payment, error)
 		PutPayment(payment *domain.Payment, id int) (*domain.Payment, error)
 	}
