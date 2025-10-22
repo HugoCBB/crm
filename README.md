@@ -6,6 +6,7 @@ Um sistema de CRM moderno desenvolvido em **Go (Golang)** com **Gin** no backend
 O objetivo é oferecer uma base sólida, escalável e performática para gerenciar **usuários, leads e pagamentos** em um único painel integrado.
 
 ---
+`````
 
 ## 🚀 Tecnologias Utilizadas
 
