@@ -25,24 +25,24 @@ func RequireAuth(c *gin.Context) {
 		return []byte(tokenKey.Secret_key), nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
 	if err != nil || !token.Valid {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Usuario nao autorizado"})
 		return
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token de acesso expirado"})
 		}
 
 		var user domain.User
 		database.DB.First(&user, claims["sub"])
 		if user.ID == 0 {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Usuario nao definido"})
 		}
 		c.Set("user", user)
 		c.Next()
 	} else {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Usuario nao autorizado"})
 
 	}
 }

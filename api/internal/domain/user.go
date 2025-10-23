@@ -14,6 +14,6 @@ type User struct {
 	Password   string    `json:"password"`
 	Phone      string    `json:"phone"`
 	Roles      RolesUser `json:"roles"`
-	Leadss     []Leads   `gorm:"foreignKey:UserID; constraint:OnDelete:CASCADE;"`
 	CreateDate string    `json:"create_date"`
+	Leads      []Leads   `json:"leads" gorm:"foreignKey:UserID; constraint:OnDelete:CASCADE;"`
 }
