@@ -8,8 +8,29 @@ services:
       - POSTGRES_DB=${DATABASE_NAME}
     ports:
       - "5432:5432"
-    volumes:
-      - ./migration/docker-database-initial.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # backend:
+  #   container_name: crm-backend
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - .backend:./* 
+
+
+  # frontend:
+  #   container_name: crm-frontend
+  #   build:
+  #     context: ./client
+  #     dockerfile: Dockerfile
+  #   ports: 
+  #     - "3000:3000"
+  #   volumes:
+  #     - .client:/app
+  #     - /app/node_modules
+
 
 
   pgadmin:
