@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { leadsApi } from "@/services/api";
+import { Lead, leadsApi } from "@/services/api";
 import {
   Table,
   TableBody,
@@ -32,10 +32,12 @@ const Leads = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: leads, isLoading } = useQuery({
+  const { data: leads = [], isLoading, error } = useQuery<Lead[]>({
     queryKey: ["leads"],
-    queryFn: () => leadsApi.getAll(),
-  });
+    queryFn: leadsApi.getAll,
+});
+
+
 
   const createLeadMutation = useMutation({
     mutationFn: (newLead: { name: string; phone: string }) =>
@@ -139,31 +141,30 @@ const Leads = () => {
                 <TableRow>
                   <TableHead>Nome</TableHead>
                   <TableHead>Telefone</TableHead>
-                  <TableHead>Responsável</TableHead>
                   <TableHead>Data de Criação</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {leads?.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell className="font-medium">{lead.name}</TableCell>
-                    <TableCell>{lead.phone}</TableCell>
-                    <TableCell>
-                      -
-                    </TableCell>
-                    <TableCell>
-                      {new Date(lead.create_date).toLocaleDateString("pt-BR")}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {(!leads || leads.length === 0) && (
+                {leads.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground">
                       Nenhum lead encontrado
                     </TableCell>
                   </TableRow>
+                ) : (
+                  leads.map((lead) => (
+                    <TableRow key={lead.id}>
+                      <TableCell className="font-medium">{lead.name}</TableCell>
+                      <TableCell>{lead.phone}</TableCell>
+                      <TableCell>
+                        {lead.create_date}
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
-              </TableBody>
+
+            </TableBody>
+
             </Table>
           )}
         </CardContent>

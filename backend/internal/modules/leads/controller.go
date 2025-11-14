@@ -34,3 +34,15 @@ func (u *LeadsController) CreateLead(c *gin.Context) {
 	})
 
 }
+
+func (u LeadsController) FindLeads(c *gin.Context) {
+	leads, err := u.Repo.FindLeads()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Erro ao buscar leads",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, leads)
+}

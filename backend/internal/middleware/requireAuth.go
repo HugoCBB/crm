@@ -12,7 +12,10 @@ import (
 )
 
 func RequireAuth(c *gin.Context) {
-
+	if c.Request.Method == "OPTIONS" {
+		c.Next()
+		return
+	}
 	tokenKey := token.NewTokenConfig()
 	tokenString, err := c.Cookie("Authorization")
 

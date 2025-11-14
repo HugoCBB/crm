@@ -8,6 +8,7 @@ import (
 type (
 	ILeadsRepository interface {
 		Save(Leads *domain.Leads) (*domain.Leads, error)
+		FindAllLeads() ([]domain.Leads, error)
 	}
 	LeadsRepository struct {
 		DB *gorm.DB
@@ -23,4 +24,12 @@ func (u *LeadsRepository) Save(leads *domain.Leads) (*domain.Leads, error) {
 		return nil, err
 	}
 	return leads, nil
+}
+
+func (u *LeadsRepository) FindAllLeads() ([]domain.Leads, error) {
+	var payload *[]domain.Leads
+	if err := u.DB.Preload("Payments").Find(&payload).Error; err != nil {
+		return nil, err
+	}
+	return *payload, nil
 }

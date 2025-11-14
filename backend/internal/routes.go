@@ -28,6 +28,7 @@ func HandleRequests() {
 		leads := api.Group("/leads", middleware.RequireAuth)
 		{
 			leads.POST("/", deps.LeadsController.CreateLead)
+			leads.GET("/", deps.LeadsController.FindLeads)
 		}
 
 		payment := api.Group("/payment", middleware.RequireAuth)
