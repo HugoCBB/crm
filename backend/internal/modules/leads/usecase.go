@@ -8,8 +8,8 @@ import (
 
 type (
 	ILeadsUsecase interface {
-		CreateLead(payload *domain.Leads) (int, error)
-		FindLeads() ([]domain.Leads, error)
+		CreateLead(payload *domain.Leads, userId int) (*domain.Leads, error)
+		FindLeads(userId int) ([]domain.Leads, error)
 	}
 
 	LeadsUsecase struct {
@@ -17,17 +17,18 @@ type (
 	}
 )
 
-func (l *LeadsUsecase) CreateLead(payload *domain.Leads) (int, error) {
+func (l *LeadsUsecase) CreateLead(payload *domain.Leads, userId int) (*domain.Leads, error) {
 	payload.CreateDate = time.Now().Format("02/01/2006")
+	payload.UserID = uint(userId)
 	lead, err := l.Repo.Save(payload)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return int(lead.ID), nil
+	return lead, nil
 }
 
-func (l *LeadsUsecase) FindLeads() ([]domain.Leads, error) {
-	leads, err := l.Repo.FindAllLeads()
+func (l *LeadsUsecase) FindLeads(userId int) ([]domain.Leads, error) {
+	leads, err := l.Repo.FindAllLeads(userId)
 	if err != nil {
 		return nil, err
 	}

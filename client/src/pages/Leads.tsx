@@ -32,10 +32,11 @@ const Leads = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: leads = [], isLoading, error } = useQuery<Lead[]>({
-    queryKey: ["leads"],
-    queryFn: leadsApi.getAll,
-});
+
+  const { data: leads, isLoading } = useQuery({
+    queryKey: ['leads'],
+    queryFn: leadsApi.getAll
+  });
 
 
 
@@ -44,10 +45,9 @@ const Leads = () => {
       leadsApi.create({
         name: newLead.name,
         phone: newLead.phone,
-        user_id: 1, 
       }),
 
-      
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       setOpen(false);
@@ -163,7 +163,7 @@ const Leads = () => {
                   ))
                 )}
 
-            </TableBody>
+              </TableBody>
 
             </Table>
           )}

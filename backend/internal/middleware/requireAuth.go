@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/crm/backend/config/database"
@@ -17,10 +18,15 @@ func RequireAuth(c *gin.Context) {
 		return
 	}
 	tokenKey := token.NewTokenConfig()
-	tokenString, err := c.Cookie("Authorization")
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Header de autorização não encontrado"})
+		return
+	}
 
-	if err != nil {
-		c.AbortWithStatus(http.StatusUnauthorized)
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	if tokenString == authHeader {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Formato do token inválido (esperado 'Bearer ...')"})
 		return
 	}
 
@@ -35,14 +41,24 @@ func RequireAuth(c *gin.Context) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token de acesso expirado"})
+			return
 		}
 
+		userIDFloat, ok := claims["sub"].(float64)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Claim 'sub' (ID do usuário) inválida"})
+			return
+		}
+		userID := int(userIDFloat)
+
 		var user domain.User
-		database.DB.First(&user, claims["sub"])
+		database.DB.First(&user, userID)
 		if user.ID == 0 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Usuario nao definido"})
+			return
 		}
 		c.Set("user", user)
+		c.Set("userId", userID)
 		c.Next()
 	} else {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Usuario nao autorizado"})

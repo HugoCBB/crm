@@ -6,22 +6,49 @@ export interface Lead {
   name: string;
   phone: string;
   create_date: string;
-  user_id: number;
+
 }
 
+export interface User {
+  name: string,
+  email: string,
+  password: string,
+  phone: string
+}
+
+export interface LoginResponse {
+  status: string;
+  token: string;
+}
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
   withCredentials: true,
-  
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("authToken")
+  if (token) config.headers["Authorization"] = `Bearer ${token}`;
+
+  return config
+}, (error) => {
+  return Promise.reject(error)
+})
+
+export const userApi = {
+  login: async (user: Pick<User, 'email' | 'password'>): Promise<LoginResponse> => {
+    const response = await api.post('/users/login', user)
+    return response.data
+  }
+}
+
 export const leadsApi = {
   getAll: async (): Promise<Lead[]> => {
-    const res = await api.get<Lead[]>("/leads/"); 
-    return res.data;                             
+    const res = await api.get<Lead[]>("/leads/");
+    return res.data;
   },
 
   create: async (lead: Omit<Lead, "id" | "create_date">): Promise<Lead> => {
