@@ -180,7 +180,3 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ```
 
----
-
-Se quiser, posso gerar uma **versão personalizada com badges**, logo e um **diagrama visual da arquitetura** (feito em Markdown ou PlantUML) — quer que eu monte isso pra deixar o README mais profissional?
-```
