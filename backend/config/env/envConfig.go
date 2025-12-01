@@ -7,7 +7,7 @@ import (
 )
 
 func LoadEnv() error {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Fatal("Erro ao procurar arquivo .env")
 		return err
 	}
