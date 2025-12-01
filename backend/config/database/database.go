@@ -41,6 +41,6 @@ func openDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	DB.AutoMigrate(&domain.User{}, &domain.Leads{}, &domain.Payment{})
+	DB.AutoMigrate(&domain.User{}, &domain.Leads{}, &domain.Payment{}, &domain.Schedule{})
 	return DB, nil
 }

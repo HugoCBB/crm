@@ -1,124 +1,145 @@
 import axios from 'axios';
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { userApi } from '@/services/api';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 
 export const RegisterForms = () => {
-    
-    const [statusMessage, setStatusMessage] = useState(Boolean)
-    const [registerMessage, setRegisterMessage] = useState<string | null>(null)
-    const [form, setForm] = useState({
-      name: '',
-      email: '',
-      password: '',
-      phone: '',
-    })
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
 
-        try {
-          const response = await axios.post("http://localhost:8080/api/users/register",form, {
-            headers: { 'Content-Type': 'application/json' },
-          })
+  const [statusMessage, setStatusMessage] = useState(Boolean)
+  const [registerMessage, setRegisterMessage] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false);
 
-          setForm({ name: "", email: "", password: "", phone: "" });
-          setStatusMessage(true)
-          setRegisterMessage("Usuario cadastrado com sucesso")
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
+  })
 
-        } catch (error) {
-          console.error(error)
-          setStatusMessage(false)
-          setRegisterMessage("Ocorreu um erro inesperado. Por favor, tente novamente.");
-          
-        }
-    };
+  const navigate = useNavigate();
 
-    return(
-        <form onSubmit={handleSubmit}>
+  useEffect(() => {
+    if (localStorage.getItem('authToken')) {
+      navigate('/dashboard')
+    }
+  }, [navigate]);
 
-          {registerMessage && (
-            <div 
-              className={`border px-4 py-3 rounded-lg mb-4 ${
-                statusMessage 
-                  ? "bg-green-100 border-green-400 text-green-700" 
-                  : "bg-red-100 border-red-400 text-red-700"
-              }`} 
-              role="alert"
-            >
-              <span className="block sm:inline">{registerMessage}</span>
-            </div>
-          )}
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-          {/* Campo: Nome */}
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-semibold mb-2 text-gray-700">
-              Nome
-            </label>
-            <input
-              id="name"
-              type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 placeholder-gray-400 transition duration-200 ease-in-out"
-              placeholder="Seu nome completo"
-              value={form.name}
-              onChange={(e) => setForm({...form, name: e.target.value})}
-              required
-            />
-          </div>
+    try {
+      await axios.post("http://localhost:8080/api/users/register", form, {
+        headers: { 'Content-Type': 'application/json' },
+      })
 
-          {/* Campo: Email */}
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-semibold mb-2 text-gray-700">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 placeholder-gray-400 transition duration-200 ease-in-out"
-              placeholder="seuemail@exemplo.com"
-              value={form.email}
-              onChange={(e) => setForm({...form, email: e.target.value})}
-              required
-            />
-          </div>
+      // Auto login after registration
+      const loginResponse = await userApi.login({
+        email: form.email,
+        password: form.password
+      });
 
-          {/* Campo: Telefone */}
-          <div className="mb-4">
-            <label htmlFor="phone" className="block text-sm font-semibold mb-2 text-gray-700">
-              Telefone
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 placeholder-gray-400 transition duration-200 ease-in-out"
-              placeholder="(XX) XXXXX-XXXX"
-              value={form.phone}
-              onChange={(e) => setForm({...form, phone: e.target.value})}
-              required
-            />
-          </div>
+      localStorage.setItem('authToken', loginResponse.token);
 
-          {/* Campo: Senha */}
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-semibold mb-2 text-gray-700">
-              Senha
-            </label>
-            <input
-              id="password"
-              type="password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-800 placeholder-gray-400 transition duration-200 ease-in-out"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={(e) => setForm({...form, password: e.target.value})}
-              required
-            />
-          </div>
+      setForm({ name: "", email: "", password: "", phone: "" });
+      setStatusMessage(true)
+      setRegisterMessage("Conta criada com sucesso! Redirecionando...")
 
-          {/* Botão de Envio */}
-          <button
-            type="submit"
-            className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
-            Registrar
-          </button>
-        </form>
-        
-    )
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 1000);
+
+    } catch (error) {
+      console.error(error)
+      setStatusMessage(false)
+      setRegisterMessage("Ocorreu um erro ao cadastrar. Tente novamente.");
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+
+      {registerMessage && (
+        <Alert variant={statusMessage ? "default" : "destructive"} className={statusMessage ? "bg-green-500/15 text-green-600 border-green-500/50" : ""}>
+          <AlertDescription>{registerMessage}</AlertDescription>
+        </Alert>
+      )}
+
+      <div className="space-y-2">
+        <Label htmlFor="name">Nome</Label>
+        <Input
+          id="name"
+          type="text"
+          placeholder="Seu nome completo"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          required
+          disabled={isLoading}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="seu@email.com"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          required
+          disabled={isLoading}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="phone">Telefone</Label>
+        <Input
+          id="phone"
+          type="tel"
+          placeholder="(XX) XXXXX-XXXX"
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          required
+          disabled={isLoading}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="password">Senha</Label>
+        <Input
+          id="password"
+          type="password"
+          placeholder="••••••••"
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
+          disabled={isLoading}
+        />
+      </div>
+
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Registrando...
+          </>
+        ) : (
+          "Criar conta"
+        )}
+      </Button>
+    </form>
+
+  )
 }

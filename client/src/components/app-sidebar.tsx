@@ -1,9 +1,10 @@
-import { LayoutDashboard, UserPlus, DollarSign, MessageCircle } from "lucide-react";
+import { LayoutDashboard, UserPlus, DollarSign, MessageCircle, Calendar, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -17,6 +18,7 @@ const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Leads", url: "/leads", icon: UserPlus },
   { title: "Financeiro", url: "/payments", icon: DollarSign },
+  { title: "Agenda", url: "/calendar", icon: Calendar },
   { title: "WhatsApp", url: "/whatsapp", icon: MessageCircle },
 ];
 
@@ -28,24 +30,24 @@ export function AppSidebar() {
       <SidebarContent>
         <div className="px-4 py-6">
           <h1 className={`font-bold text-xl text-primary ${state === "collapsed" ? "hidden" : ""}`}>
-            CRM 
+            CRM
           </h1>
           {state === "collapsed" && (
             <div className="text-primary font-bold text-lg">C</div>
           )}
         </div>
-        
+
         <SidebarGroup>
           <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
-          
+
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      end 
+                    <NavLink
+                      to={item.url}
+                      end
                       className="hover:bg-sidebar-accent"
                       activeClassName="bg-sidebar-accent text-primary font-medium"
                     >
@@ -59,6 +61,22 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={() => {
+                localStorage.removeItem("authToken");
+                window.location.href = "/login";
+              }}
+              className="hover:bg-sidebar-accent hover:text-destructive"
+            >
+              <LogOut className="h-4 w-4" />
+              {state !== "collapsed" && <span>Sair</span>}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }

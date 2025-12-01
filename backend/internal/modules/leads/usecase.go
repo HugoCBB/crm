@@ -10,6 +10,7 @@ type (
 	ILeadsUsecase interface {
 		CreateLead(payload *domain.Leads, userId int) (*domain.Leads, error)
 		FindLeads(userId int) ([]domain.Leads, error)
+		UpdateLeads(leads *domain.Leads) (*domain.Leads, error)
 	}
 
 	LeadsUsecase struct {
@@ -34,4 +35,13 @@ func (l *LeadsUsecase) FindLeads(userId int) ([]domain.Leads, error) {
 	}
 	return leads, nil
 
+}
+
+func (l *LeadsUsecase) UpdateLeads(leads *domain.Leads) (*domain.Leads, error) {
+	payload, err := l.Repo.Update(leads)
+
+	if err != nil {
+		return nil, err
+	}
+	return payload, nil
 }

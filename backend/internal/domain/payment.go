@@ -22,4 +22,5 @@ type Payment struct {
 	FinalDate  string        `json:"final_date"`
 	Status     Statuspayment `json:"status"`
 	LeadsID    uint          `json:"leads_id"`
+	Lead       Leads         `json:"lead" gorm:"foreignKey:LeadsID"`
 }

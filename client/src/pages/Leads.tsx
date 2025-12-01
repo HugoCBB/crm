@@ -21,14 +21,20 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
+import { Plus, DollarSign } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { AddPaymentDialog } from "@/components/AddPaymentDialog";
 
 const Leads = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+
+  // Payment Dialog State
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<{ id: number, name: string } | null>(null);
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -74,16 +80,21 @@ const Leads = () => {
     }
   };
 
+  const handleAddPayment = (lead: Lead) => {
+    setSelectedLead({ id: lead.id, name: lead.name });
+    setPaymentOpen(true);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Leads</h1>
-          <p className="text-muted-foreground mt-1">Gerenciamento de leads</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Leads</h1>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">Gerenciamento de leads</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2 w-full sm:w-auto">
               <Plus className="h-4 w-4" />
               Adicionar Lead
             </Button>
@@ -136,39 +147,60 @@ const Leads = () => {
           {isLoading ? (
             <p className="text-muted-foreground">Carregando...</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Telefone</TableHead>
-                  <TableHead>Data de Criação</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {leads.length === 0 ? (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
-                      Nenhum lead encontrado
-                    </TableCell>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Telefone</TableHead>
+                    <TableHead className="whitespace-nowrap">Data de Criação</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
-                ) : (
-                  leads.map((lead) => (
-                    <TableRow key={lead.id}>
-                      <TableCell className="font-medium">{lead.name}</TableCell>
-                      <TableCell>{lead.phone}</TableCell>
-                      <TableCell>
-                        {lead.create_date}
+                </TableHeader>
+                <TableBody>
+                  {leads?.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                        Nenhum lead encontrado
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
+                  ) : (
+                    leads?.map((lead) => (
+                      <TableRow key={lead.id}>
+                        <TableCell className="font-medium whitespace-nowrap">{lead.name}</TableCell>
+                        <TableCell className="whitespace-nowrap">{lead.phone}</TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {lead.create_date}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => handleAddPayment(lead)}
+                          >
+                            <DollarSign className="h-4 w-4" />
+                            <span className="hidden sm:inline">Pagamento</span>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
 
-              </TableBody>
+                </TableBody>
 
-            </Table>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
+
+      <AddPaymentDialog
+        open={paymentOpen}
+        onOpenChange={setPaymentOpen}
+        leadId={selectedLead?.id || null}
+        leadName={selectedLead?.name || null}
+      />
     </div>
   );
 };

@@ -35,6 +35,13 @@ func HandleRequests() {
 		{
 			payment.POST("/", deps.PaymentController.Createpayment)
 			payment.PUT("/:id", deps.PaymentController.ModifyPayment)
+			payment.GET("/", deps.PaymentController.FindAll)
+		}
+
+		schedule := api.Group("/schedules", middleware.RequireAuth)
+		{
+			schedule.POST("/", deps.ScheduleController.CreateSchedule)
+			schedule.GET("/", deps.ScheduleController.FindAll)
 		}
 	}
 	fmt.Println("Servidor rodando na porta 8080")

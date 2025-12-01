@@ -9,6 +9,7 @@ type (
 	ILeadsRepository interface {
 		Save(Leads *domain.Leads) (*domain.Leads, error)
 		FindAllLeads(userId int) ([]domain.Leads, error)
+		Update(leads *domain.Leads) (*domain.Leads, error)
 	}
 	LeadsRepository struct {
 		DB *gorm.DB
@@ -32,4 +33,17 @@ func (u *LeadsRepository) FindAllLeads(userId int) ([]domain.Leads, error) {
 		return nil, err
 	}
 	return *payload, nil
+}
+
+func (u *LeadsRepository) Update(leads *domain.Leads) (*domain.Leads, error) {
+	var existingLead domain.Leads
+	if err := u.DB.First(&existingLead, leads.ID).Error; err != nil {
+		return nil, err
+	}
+
+	if err := u.DB.Model(&existingLead).Updates(leads).Error; err != nil {
+		return nil, err
+	}
+	return &existingLead, nil
+
 }

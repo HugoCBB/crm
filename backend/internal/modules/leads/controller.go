@@ -67,3 +67,16 @@ func (u LeadsController) FindLeads(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, leads)
 }
+
+func (u LeadsController) UpdateLeadById(c *gin.Context) {
+	var payload *domain.Leads
+
+	leads, err := u.Repo.UpdateLeads(payload)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Erro ao atualizar lead",
+		})
+	}
+
+	c.JSON(http.StatusOK, leads)
+}

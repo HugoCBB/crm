@@ -58,25 +58,33 @@ export const leadsApi = {
 
 };
 
-// API de Pagamentos
-// export const paymentsApi = {
-//   getAll: () => fetchApi<Payment[]>('/payments'),
-//   getById: (id: number) => fetchApi<Payment>(`/payments/${id}`),
-//   create: (payment: Omit<Payment, 'id' | 'create_date'>) =>
-//     fetchApi<Payment>('/payments', {
-//       method: 'POST',
-//       body: JSON.stringify(payment),
-//     }),
-//   update: (id: number, payment: Partial<Payment>) =>
-//     fetchApi<Payment>(`/payments/${id}`, {
-//       method: 'PUT',
-//       body: JSON.stringify(payment),
-//     }),
-//   delete: (id: number) =>
-//     fetchApi<void>(`/payments/${id}`, {
-//       method: 'DELETE',
-//     }),
-// };
+export interface Payment {
+  id: number;
+  value: number;
+  type: string;
+  status: string;
+  final_date: string;
+  create_date: string;
+  leads_id: number;
+  lead?: Lead;
+}
+
+export const paymentsApi = {
+  getAll: async (): Promise<Payment[]> => {
+    const res = await api.get<Payment[]>("/payment/");
+    return res.data;
+  },
+
+  create: async (payment: Omit<Payment, "id" | "create_date">): Promise<Payment> => {
+    const res = await api.post<Payment>("/payment/", payment);
+    return res.data;
+  },
+
+  update: async (id: number, payment: Partial<Payment>): Promise<Payment> => {
+    const res = await api.put<Payment>(`/payment/${id}`, payment);
+    return res.data;
+  },
+};
 
 // // API de Usuários
 // export const usersApi = {
@@ -97,6 +105,26 @@ export const leadsApi = {
 //       method: 'DELETE',
 //     }),
 // };
+
+export interface Schedule {
+  id: number;
+  lead_id: number;
+  date: string;
+  description: string;
+  user_id: number;
+  lead?: Lead;
+}
+
+export const schedulesApi = {
+  getAll: async (): Promise<Schedule[]> => {
+    const res = await api.get<Schedule[]>("/schedules/");
+    return res.data;
+  },
+  create: async (schedule: Omit<Schedule, "id" | "user_id" | "lead">): Promise<Schedule> => {
+    const res = await api.post<Schedule>("/schedules/", schedule);
+    return res.data;
+  }
+};
 
 export const statsApi = {
   getDashboard: () => api.get('/status/dashboard').then(r => r.data)
