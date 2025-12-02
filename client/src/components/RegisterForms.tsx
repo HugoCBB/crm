@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userApi } from '@/services/api';
@@ -7,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
+import { getToken, setToken } from "@/lib/auth";
 
 export const RegisterForms = () => {
 
@@ -24,7 +24,7 @@ export const RegisterForms = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('authToken')) {
+    if (getToken()) {
       navigate('/dashboard')
     }
   }, [navigate]);
@@ -34,9 +34,7 @@ export const RegisterForms = () => {
     setIsLoading(true);
 
     try {
-      await axios.post("http://localhost:8080/api/users/register", form, {
-        headers: { 'Content-Type': 'application/json' },
-      })
+      await userApi.register(form);
 
       // Auto login after registration
       const loginResponse = await userApi.login({
@@ -44,7 +42,7 @@ export const RegisterForms = () => {
         password: form.password
       });
 
-      localStorage.setItem('authToken', loginResponse.token);
+      setToken(loginResponse.token);
 
       setForm({ name: "", email: "", password: "", phone: "" });
       setStatusMessage(true)

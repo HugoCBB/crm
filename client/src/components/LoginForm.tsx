@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
+import { getToken, setToken } from "@/lib/auth";
 
 export default function LoginForm() {
   const [statusMessage, setStatusMessage] = useState(Boolean)
@@ -19,7 +20,7 @@ export default function LoginForm() {
   })
 
   useEffect(() => {
-    if (localStorage.getItem('authToken')) {
+    if (getToken()) {
       navigate('/dashboard')
     }
   }, [navigate]);
@@ -28,14 +29,14 @@ export default function LoginForm() {
     e.preventDefault();
     setIsLoading(true);
 
-    if (localStorage.getItem('authToken')) {
+    if (getToken()) {
       navigate('/dashboard')
       return
     }
 
     try {
       const response = await userApi.login(form)
-      localStorage.setItem('authToken', response.token);
+      setToken(response.token);
 
       setForm({ email: "", password: "" })
       setStatusMessage(true)

@@ -18,25 +18,6 @@ const Landing = () => {
                         CRM Pro
                     </div>
 
-                    {/* Desktop Nav */}
-                    <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-                        <Link to="#" className="hover:text-foreground transition-colors flex items-center gap-1">
-                            Product
-                        </Link>
-                        <Link to="#" className="hover:text-foreground transition-colors flex items-center gap-1">
-                            Use Cases <ChevronDown className="h-3 w-3" />
-                        </Link>
-                        <Link to="#" className="hover:text-foreground transition-colors">
-                            Pricing
-                        </Link>
-                        <Link to="#" className="hover:text-foreground transition-colors">
-                            Blog
-                        </Link>
-                        <Link to="#" className="hover:text-foreground transition-colors flex items-center gap-1">
-                            Resources <ChevronDown className="h-3 w-3" />
-                        </Link>
-                    </nav>
-
                     <div className="flex items-center gap-4">
                         <Link to="/login" className="text-sm font-medium hover:text-primary transition-colors">
                             Login

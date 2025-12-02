@@ -13,6 +13,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { removeToken } from "@/lib/auth";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -66,7 +67,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => {
-                localStorage.removeItem("authToken");
+                removeToken();
                 window.location.href = "/login";
               }}
               className="hover:bg-sidebar-accent hover:text-destructive"

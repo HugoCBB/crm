@@ -1,3 +1,6 @@
+
+import { getToken } from "@/lib/auth";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 import axios from "axios";
 
@@ -22,27 +25,70 @@ export interface LoginResponse {
 }
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
+  baseURL: import.meta.env.VITE_API_URL || "https://crm-api-2-fmay.onrender.com/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
+const CACHE_PREFIX = 'api_cache_';
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
+
+
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("authToken")
+  const token = getToken();
   if (token) config.headers["Authorization"] = `Bearer ${token}`;
 
+  if (config.method === "get") {
+    const key = CACHE_PREFIX + config.url!;
+    const cachedItem = localStorage.getItem(key);
+
+    if (cachedItem) {
+      const cached = JSON.parse(cachedItem);
+      if (Date.now() - cached.timestamp < CACHE_TTL) {
+        return Promise.reject({
+          __fromCache: true,
+          data: cached.data
+        });
+      }
+    }
+  }
   return config
 }, (error) => {
   return Promise.reject(error)
 })
 
+api.interceptors.response.use(
+  (response) => {
+    if (response.config.method === "get") {
+      const key = CACHE_PREFIX + response.config.url!;
+      localStorage.setItem(key, JSON.stringify({
+        data: response.data,
+        timestamp: Date.now()
+      }));
+    }
+    return response;
+  },
+  (error) => {
+    if (error.__fromCache) {
+      return Promise.resolve({ data: error.data });
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const userApi = {
   login: async (user: Pick<User, 'email' | 'password'>): Promise<LoginResponse> => {
     const response = await api.post('/users/login', user)
     return response.data
+  },
+  register: async (user: Omit<User, 'id'>): Promise<User> => {
+    const response = await api.post('/users/register', user)
+    return response.data
   }
+
 }
 
 export const leadsApi = {
@@ -85,26 +131,6 @@ export const paymentsApi = {
     return res.data;
   },
 };
-
-// // API de Usuários
-// export const usersApi = {
-//   getAll: () => fetchApi<User[]>('/users'),
-//   getById: (id: number) => fetchApi<User>(`/users/${id}`),
-//   create: (user: Omit<User, 'id' | 'create_date'>) =>
-//     fetchApi<User>('/users', {
-//       method: 'POST',
-//       body: JSON.stringify(user),
-//     }),
-//   update: (id: number, user: Partial<User>) =>
-//     fetchApi<User>(`/users/${id}`, {
-//       method: 'PUT',
-//       body: JSON.stringify(user),
-//     }),
-//   delete: (id: number) =>
-//     fetchApi<void>(`/users/${id}`, {
-//       method: 'DELETE',
-//     }),
-// };
 
 export interface Schedule {
   id: number;
