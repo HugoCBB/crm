@@ -1,0 +1,439 @@
+basePath: /api
+definitions:
+  domain.Leads:
+    properties:
+      create_date:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      payments:
+        items:
+          $ref: '#/definitions/domain.Payment'
+        type: array
+      phone:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  domain.Payment:
+    properties:
+      create_date:
+        type: string
+      final_date:
+        type: string
+      id:
+        type: integer
+      lead:
+        $ref: '#/definitions/domain.Leads'
+      leads_id:
+        type: integer
+      status:
+        $ref: '#/definitions/domain.Statuspayment'
+      type:
+        $ref: '#/definitions/domain.Typepayment'
+      value:
+        type: number
+    type: object
+  domain.RolesUser:
+    enum:
+    - ADMIN
+    - USER
+    type: string
+    x-enum-varnames:
+    - ADMIN
+    - USER
+  domain.Schedule:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      lead:
+        $ref: '#/definitions/domain.Leads'
+      lead_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  domain.Statuspayment:
+    enum:
+    - PENDENTE
+    - VENCIDO
+    - PAGO
+    type: string
+    x-enum-varnames:
+    - PENDENTE
+    - VENCIDO
+    - PAGO
+  domain.Typepayment:
+    enum:
+    - BOLETO
+    - CARTAO
+    - AVISTA
+    - PIX
+    type: string
+    x-enum-varnames:
+    - BOLETO
+    - CARTAO
+    - AVISTA
+    - PIX
+  domain.User:
+    properties:
+      create_date:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      leads:
+        items:
+          $ref: '#/definitions/domain.Leads'
+        type: array
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      roles:
+        $ref: '#/definitions/domain.RolesUser'
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API do CRM (usuarios, leads, pagamentos, agendamentos)
+  title: CRM Backend API
+  version: "1.0"
+paths:
+  /leads/:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Leads'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Lista leads do usuário
+      tags:
+      - Leads
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do lead
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Leads'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Leads'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Cria um novo lead
+      tags:
+      - Leads
+  /leads/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do lead para atualização
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Leads'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Leads'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Atualiza um lead
+      tags:
+      - Leads
+  /payment/:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Payment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Lista pagamentos do usuário
+      tags:
+      - Payment
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do pagamento
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Payment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Payment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Cria pagamento
+      tags:
+      - Payment
+  /payment/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID do pagamento
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Novos dados do pagamento
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Payment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Payment'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Modifica pagamento
+      tags:
+      - Payment
+  /schedules/:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do agendamento
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Schedule'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Cria agendamento
+      tags:
+      - Schedules
+  /users/:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: lista de usuários
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Lista todos os usuários
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Deleta usuário por id
+      tags:
+      - Users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Credenciais do usuário
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login de usuário
+      tags:
+      - Users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/domain.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registra um novo usuário
+      tags:
+      - Users
+schemes:
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    description: 'Coloque o token no header no formato: "Bearer <token>"'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

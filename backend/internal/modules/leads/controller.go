@@ -11,6 +11,17 @@ type LeadsController struct {
 	Repo ILeadsUsecase
 }
 
+// CreateLead cria um novo lead para o usuário autenticado.
+// @Summary Cria um novo lead
+// @Tags Leads
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param payload body domain.Leads true "Dados do lead"
+// @Success 200 {object} domain.Leads
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /leads/ [post]
 func (u *LeadsController) CreateLead(c *gin.Context) {
 	var payload domain.Leads
 
@@ -41,6 +52,16 @@ func (u *LeadsController) CreateLead(c *gin.Context) {
 
 }
 
+// FindLeads retorna todos os leads do usuário autenticado.
+// @Summary Lista leads do usuário
+// @Tags Leads
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Success 200 {array} domain.Leads
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /leads/ [get]
 func (u LeadsController) FindLeads(c *gin.Context) {
 	userIdUntyped, exists := c.Get("userId")
 	if !exists {
@@ -68,6 +89,16 @@ func (u LeadsController) FindLeads(c *gin.Context) {
 	c.JSON(http.StatusOK, leads)
 }
 
+// UpdateLeadById atualiza um lead (exemplo — adapte a rota se for diferente)
+// @Summary Atualiza um lead
+// @Tags Leads
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param payload body domain.Leads true "Dados do lead para atualização"
+// @Success 200 {object} domain.Leads
+// @Failure 400 {object} map[string]string
+// @Router /leads/{id} [put]
 func (u LeadsController) UpdateLeadById(c *gin.Context) {
 	var payload *domain.Leads
 

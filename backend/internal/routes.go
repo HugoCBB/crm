@@ -7,6 +7,10 @@ import (
 	"github.com/crm/backend/config/dependencys"
 	"github.com/crm/backend/internal/middleware"
 	"github.com/gin-gonic/gin"
+
+	_ "github.com/crm/backend/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func HandleRequests() {
@@ -14,6 +18,8 @@ func HandleRequests() {
 	r.Use(middleware.CORSMiddleware())
 	deps := dependencys.SetupDependency(database.DB)
 
+	r.GET("/docs", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := r.Group("/api")
 	{
 		users := api.Group("/users")
@@ -44,6 +50,7 @@ func HandleRequests() {
 			schedule.GET("/", deps.ScheduleController.FindAll)
 		}
 	}
+
 	fmt.Println("Servidor rodando na porta 8080")
 	r.Run(":8080")
 }
