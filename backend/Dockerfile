@@ -13,6 +13,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main ./cmd/server
 FROM scratch
 
 COPY --from=builder /app/main /
-COPY --from=builder /app/.env /.env
 
 CMD ["/main"]
