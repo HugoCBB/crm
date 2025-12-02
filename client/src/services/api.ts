@@ -40,44 +40,10 @@ const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 api.interceptors.request.use((config) => {
   const token = getToken();
   if (token) config.headers["Authorization"] = `Bearer ${token}`;
-
-  if (config.method === "get") {
-    const key = CACHE_PREFIX + config.url!;
-    const cachedItem = localStorage.getItem(key);
-
-    if (cachedItem) {
-      const cached = JSON.parse(cachedItem);
-      if (Date.now() - cached.timestamp < CACHE_TTL) {
-        return Promise.reject({
-          __fromCache: true,
-          data: cached.data
-        });
-      }
-    }
-  }
   return config
 }, (error) => {
   return Promise.reject(error)
 })
-
-api.interceptors.response.use(
-  (response) => {
-    if (response.config.method === "get") {
-      const key = CACHE_PREFIX + response.config.url!;
-      localStorage.setItem(key, JSON.stringify({
-        data: response.data,
-        timestamp: Date.now()
-      }));
-    }
-    return response;
-  },
-  (error) => {
-    if (error.__fromCache) {
-      return Promise.resolve({ data: error.data });
-    }
-    return Promise.reject(error);
-  }
-);
 
 export const userApi = {
   login: async (user: Pick<User, 'email' | 'password'>): Promise<LoginResponse> => {
