@@ -1,15 +1,13 @@
 package env
 
 import (
-	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 )
 
-func LoadEnv() error {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Erro ao procurar arquivo .env")
-		return err
+func LoadEnv() {
+	if os.Getenv("RENDER") == "" {
+		godotenv.Load()
 	}
-	return nil
 }
