@@ -27,7 +27,7 @@ func ConnectDatabase() error {
 
 func openDatabase() (*gorm.DB, error) {
 	cfg := NewDatabaseConfig()
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require",
 		cfg.Host,
 		cfg.User,
 		cfg.Password,
@@ -35,9 +35,12 @@ func openDatabase() (*gorm.DB, error) {
 		cfg.Port,
 	)
 
+	log.Printf("Attempting to connect to database host=%s user=%s dbname=%s port=%s", cfg.Host, cfg.User, cfg.Name, cfg.Port)
+
 	DB, err = gorm.Open(postgres.Open(dsn))
 
 	if err != nil {
+		log.Printf("Failed to connect to database: %v", err)
 		return nil, err
 	}
 
