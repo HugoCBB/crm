@@ -1,8 +1,10 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/crm/backend/config"
 	"github.com/crm/backend/config/database"
 	"github.com/crm/backend/config/dependencys"
 	"github.com/crm/backend/internal/middleware"
@@ -14,15 +16,18 @@ import (
 )
 
 func HandleRequests() {
+	ctx := context.Background()
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
 	deps := dependencys.SetupDependency(database.DB)
+
+	rdb := config.NewClientRedis(ctx)
 
 	r.GET("/docs", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := r.Group("/api")
 	{
-		users := api.Group("/users")
+		users := api.Group("/users", middleware.RateLimitMiddleware(rdb))
 		{
 			users.POST("/register", deps.UserController.RegisterUser)
 			users.POST("/login", deps.UserController.Login)

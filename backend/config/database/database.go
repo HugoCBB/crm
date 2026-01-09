@@ -26,14 +26,21 @@ func ConnectDatabase() error {
 }
 
 func openDatabase() (*gorm.DB, error) {
+	// var dsn string
 	cfg := NewDatabaseConfig()
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require",
-		cfg.Host,
-		cfg.User,
-		cfg.Password,
-		cfg.Name,
-		cfg.Port,
-	)
+	fmt.Println(cfg)
+
+	dsn := "host=db user=postgres password=root dbname=crm port=5432"
+	// if cfg == nil {
+	// } else {
+	// 	dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s ",
+	// 		cfg.Host,
+	// 		cfg.User,
+	// 		cfg.Password,
+	// 		cfg.Name,
+	// 		cfg.Port,
+	// 	)
+	// }
 
 	log.Printf("Attempting to connect to database host=%s user=%s dbname=%s port=%s", cfg.Host, cfg.User, cfg.Name, cfg.Port)
 

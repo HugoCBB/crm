@@ -9,37 +9,29 @@ services:
     ports:
       - "5432:5432"
 
-  # backend:
-  #   container_name: crm-backend
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8080:8080"
-  #   volumes:
-  #     - .backend:./* 
-
-
-  # frontend:
-  #   container_name: crm-frontend
-  #   build:
-  #     context: ./client
-  #     dockerfile: Dockerfile
-  #   ports: 
-  #     - "3000:3000"
-  #   volumes:
-  #     - .client:/app
-  #     - /app/node_modules
-
-
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: crm-pgadmin
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
+  backend:
+    container_name: crm-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-      - "54321:80"
+      - "8080:8080"
     depends_on:
       - db
+      - redis
+
+  frontend:
+    container_name: crm-frontend
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports: 
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+
+  redis:
+      image: redis:alpine
+      ports:
+        - "6379:6379"

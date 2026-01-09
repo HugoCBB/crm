@@ -10,4 +10,5 @@ func LoadEnv() {
 	if os.Getenv("RENDER") == "" {
 		godotenv.Load()
 	}
+	godotenv.Load()
 }
