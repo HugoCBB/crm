@@ -1,6 +1,7 @@
 package user
 
 import (
+	"os"
 	"time"
 
 	"github.com/crm/backend/internal/domain"
@@ -20,6 +21,8 @@ type (
 		Repo IUserRepository
 	}
 )
+
+var SECRET_KEY = os.Getenv("SECRET_KEY")
 
 func (r *UserUsecase) Register(payload *domain.User) (string, error) {
 	hashedPassword, err := hash.HashPassword(payload.Password)
@@ -49,7 +52,7 @@ func (r *UserUsecase) Register(payload *domain.User) (string, error) {
 		return "", domain.ErrInternalError
 	}
 
-	tokenString, err := jwt.GenerateToken(int(user.ID))
+	tokenString, err := jwt.GenerateToken(int(user.ID), SECRET_KEY)
 	if err != nil {
 		return "", err
 
@@ -73,7 +76,7 @@ func (r *UserUsecase) Login(payload *domain.User) (string, error) {
 		return "", domain.ErrInvalidPassword
 	}
 
-	tokenString, err := jwt.GenerateToken(int(user.ID))
+	tokenString, err := jwt.GenerateToken(int(user.ID), SECRET_KEY)
 	if err != nil {
 		return "", domain.ErrInternalError
 	}

@@ -1,13 +1,12 @@
 package main
 
 import (
-	"github.com/crm/backend/config/database"
-	"github.com/crm/backend/config/env"
+	"github.com/crm/backend/config"
 	"github.com/crm/backend/internal"
 )
 
 func init() {
-	env.LoadEnv()
+	config.LoadEnv()
 }
 
 // @title CRM Backend API
@@ -23,6 +22,6 @@ func init() {
 // @description Coloque o token no header no formato: "Bearer <token>"
 
 func main() {
-	database.ConnectDatabase()
+	config.ConnectDatabase()
 	internal.HandleRequests()
 }

@@ -1,4 +1,4 @@
-package dependencys
+package config
 
 import (
 	"github.com/crm/backend/internal/modules/leads"

@@ -5,8 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/crm/backend/config/database"
-	"github.com/crm/backend/config/token"
+	"github.com/crm/backend/config"
 	"github.com/crm/backend/internal/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -17,7 +16,7 @@ func RequireAuth(c *gin.Context) {
 		c.Next()
 		return
 	}
-	tokenKey := token.NewTokenConfig()
+	tokenKey := config.NewTokenConfig()
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Header de autorização não encontrado"})
@@ -52,7 +51,7 @@ func RequireAuth(c *gin.Context) {
 		userID := int(userIDFloat)
 
 		var user domain.User
-		database.DB.First(&user, userID)
+		config.DB.First(&user, userID)
 		if user.ID == 0 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Usuario nao definido"})
 			return

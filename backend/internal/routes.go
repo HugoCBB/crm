@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	"github.com/crm/backend/config"
-	"github.com/crm/backend/config/database"
-	"github.com/crm/backend/config/dependencys"
 	"github.com/crm/backend/internal/middleware"
 	"github.com/gin-gonic/gin"
 
@@ -19,7 +17,7 @@ func HandleRequests() {
 	ctx := context.Background()
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
-	deps := dependencys.SetupDependency(database.DB)
+	deps := config.SetupDependency(config.DB)
 
 	rdb := config.NewClientRedis(ctx)
 
